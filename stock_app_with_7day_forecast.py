@@ -27,8 +27,10 @@ if st.button("🔍 Predict Prices"):
 
     if df.empty:
         st.warning("⚠️ No data found! Check your ticker or date range.")
-    elif 'Close' not in df.columns or df['Close'].isnull().all():
-        st.warning("⚠️ 'Close' column is missing or contains all NaN values.")
+    elif 'Close' not in df.columns:
+        st.warning("⚠️ 'Close' column is missing in the data.")
+    elif df['Close'].isnull().all():
+        st.warning("⚠️ All values in 'Close' column are NaN.")
     else:
         st.subheader(f"📊 Closing Price for {ticker.upper()}")
         st.line_chart(df['Close'])
@@ -76,3 +78,4 @@ if st.button("🔍 Predict Prices"):
 
         st.success("✅ Forecast completed successfully!")
         st.balloons()
+        st.markdown("### 📊 Model Summary")
