@@ -31,7 +31,7 @@ if st.button("🔍 Predict Prices"):
         st.warning("⚠️ 'Close' column is missing in the data.")
     else:
         # Separate check to avoid ambiguity
-        if df['Close'].isnull().all():
+        if bool['Close'].isnull().all():
             st.warning("⚠️ All values in 'Close' column are NaN.")
         else:
             st.subheader(f"📊 Closing Price for {ticker.upper()}")
