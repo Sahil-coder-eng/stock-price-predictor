@@ -27,55 +27,61 @@ if st.button("🔍 Predict Prices"):
 
     if df.empty:
         st.warning("⚠️ No data found! Check your ticker or date range.")
-    elif 'Close' not in df.columns:
+        st.stop()
+
+    if 'Close' not in df.columns:
         st.warning("⚠️ 'Close' column is missing in the data.")
-    elif df['Close'].isnull().all():
+        st.stop()
+
+    if df['Close'].isnull().all():
         st.warning("⚠️ All values in 'Close' column are NaN.")
-    else:
-        st.subheader(f"📊 Closing Price for {ticker.upper()}")
-        st.line_chart(df['Close'])
+        st.stop()
 
-        df = df[['Close']].reset_index()
-        df['Days'] = np.arange(len(df))
+    st.subheader(f"📊 Closing Price for {ticker.upper()}")
+    st.line_chart(df['Close'])
 
-        # Model training
-        X = df[['Days']]
-        y = df['Close']
-        model = LinearRegression()
-        model.fit(X, y)
-        predicted = model.predict(X)
+    df = df[['Close']].reset_index()
+    df['Days'] = np.arange(len(df))
 
-        # Plot actual vs predicted
-        st.subheader("📈 Predicted vs Actual Closing Prices")
-        fig, ax = plt.subplots()
-        ax.plot(df['Date'], y, label='Actual Price', linewidth=2)
-        ax.plot(df['Date'], predicted, label='Predicted Price', linestyle='--')
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Price")
-        ax.legend()
-        st.pyplot(fig)
+    # Model training
+    X = df[['Days']]
+    y = df['Close']
+    model = LinearRegression()
+    model.fit(X, y)
+    predicted = model.predict(X)
 
-        # Forecast next 7 days
-        st.subheader("📅 Next 7-Day Forecast")
-        last_day = df['Days'].iloc[-1]
-        future_days = np.arange(last_day + 1, last_day + 8).reshape(-1, 1)
-        future_dates = pd.date_range(df['Date'].iloc[-1] + pd.Timedelta(days=1), periods=7)
-        forecast = model.predict(future_days)
+    # Plot actual vs predicted
+    st.subheader("📈 Predicted vs Actual Closing Prices")
+    fig, ax = plt.subplots()
+    ax.plot(df['Date'], y, label='Actual Price', linewidth=2)
+    ax.plot(df['Date'], predicted, label='Predicted Price', linestyle='--')
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+    ax.legend()
+    st.pyplot(fig)
 
-        forecast_df = pd.DataFrame({
-            "Date": future_dates,
-            "Predicted Close Price": forecast
-        }).set_index("Date")
+    # Forecast next 7 days
+    st.subheader("📅 Next 7-Day Forecast")
+    last_day = df['Days'].iloc[-1]
+    future_days = np.arange(last_day + 1, last_day + 8).reshape(-1, 1)
+    future_dates = pd.date_range(df['Date'].iloc[-1] + pd.Timedelta(days=1), periods=7)
+    forecast = model.predict(future_days)
 
-        st.dataframe(forecast_df)
+    forecast_df = pd.DataFrame({
+        "Date": future_dates,
+        "Predicted Close Price": forecast
+    }).set_index("Date")
 
-        fig2, ax2 = plt.subplots()
-        ax2.plot(forecast_df.index, forecast_df["Predicted Close Price"], marker='o', color='green')
-        ax2.set_title("Next 7 Days Stock Price Forecast")
-        ax2.set_ylabel("Price")
-        ax2.set_xlabel("Date")
-        st.pyplot(fig2)
+    st.dataframe(forecast_df)
 
-        st.success("✅ Forecast completed successfully!")
-        st.balloons()
-        st.markdown("### 📊 Model Summary")
+    fig2, ax2 = plt.subplots()
+    ax2.plot(forecast_df.index, forecast_df["Predicted Close Price"], marker='o', color='green')
+    ax2.set_title("Next 7 Days Stock Price Forecast")
+    ax2.set_ylabel("Price")
+    ax2.set_xlabel("Date")
+    st.pyplot(fig2)
+
+    st.success("✅ Forecast completed successfully!")
+    st.balloons()
+    st.markdown("### 📊 Model Summary")
+    
